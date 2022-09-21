@@ -2,15 +2,15 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: Codepipeline pre requisites
 
 Resources:
-  S3ArtifactsBucket:
+  S3ArtifactsBucketDiego:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub codepipeline-artefactos-${AWS::AccountId}-${AWS::Region}
+      BucketName: !Sub codepipeline-artefactos-diego-chavarria-${AWS::AccountId}-${AWS::Region}
 
   S3ArtifactsBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref S3ArtifactsBucket
+      Bucket: !Ref S3ArtifactsBucketDiego
       PolicyDocument:
         Version: "2012-10-17"
         Id: SSEAndSSLPolicy
@@ -19,14 +19,14 @@ Resources:
             Effect: Allow
             Principal:
               AWS:
-                - !GetAtt CodeBuildRole.Arn
-                - !GetAtt CodePipelineRole.Arn
+                - !GetAtt CodeBuildRoleDiego.Arn
+                - !GetAtt CodePipelineRoleDiego.Arn
             Action:
               - s3:Get*
               - s3:Put*
-            Resource: !Sub "arn:aws:s3:::${S3ArtifactsBucket}/*"
+            Resource: !Sub "arn:aws:s3:::${S3ArtifactsBucketDiego}/*"
 
-  CodeBuildRole:
+  CodeBuildRoleDiego:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -76,7 +76,7 @@ Resources:
                 Resource:
                   - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*
 
-  CodePipelineRole:
+  CodePipelineRoleDiego:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -101,7 +101,7 @@ Resources:
                   - s3:GetObjectVersion
                   - s3:GetBucketVersioning
                 Resource:
-                  - !Sub "arn:aws:s3:::${S3ArtifactsBucket}/*"
+                  - !Sub "arn:aws:s3:::${S3ArtifactsBucketDiego}/*"
               - Effect: Allow
                 Action:
                   - codebuild:BatchGetBuilds
@@ -119,10 +119,10 @@ Resources:
                   - lambda:ListFunctions
                   - s3:*
                   - iam:PassRole
-                  - cloudformation:DescribeStacks
+                  - cloudformation:*
                 Resource: "*"
 
-  LambdaPolicyEC2:
+  LambdaPolicyEC2Diego:
       Type: AWS::IAM::ManagedPolicy
       Properties:
           PolicyDocument:
@@ -170,7 +170,7 @@ Resources:
                         - ec2:CreateSubnet
                     Resource:
                         - "*"
-  LambdaPolicyDynamo:
+  LambdaPolicyDynamoDiego:
       Type: AWS::IAM::ManagedPolicy
       Properties:
           PolicyDocument:
@@ -186,7 +186,7 @@ Resources:
                     Resource:
                         - "*"
 
-  LambdaPolicyCW:
+  LambdaPolicyCWDiego:
       Type: AWS::IAM::ManagedPolicy
       Properties:
           PolicyDocument:
@@ -205,9 +205,9 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       ManagedPolicyArns:
-        - !Ref LambdaPolicyDynamo
-        - !Ref LambdaPolicyEC2
-        - !Ref LambdaPolicyCW
+        - !Ref LambdaPolicyDynamoDiego
+        - !Ref LambdaPolicyEC2Diego
+        - !Ref LambdaPolicyCWDiego
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -219,7 +219,7 @@ Resources:
             Action:
               - sts:AssumeRole
       Path: /
-  LambdaPolicyS3:
+  LambdaPolicyS3Diego:
       Type: AWS::IAM::ManagedPolicy
       Properties:
           PolicyDocument:
@@ -243,31 +243,31 @@ Resources:
 
 
 Outputs:
-  PipelineRole:
-    Value: !GetAtt CodePipelineRole.Arn
+  PipelineRoleDiego:
+    Value: !GetAtt CodePipelineRoleDiego.Arn
     Export:
-      Name: PipelineRole
-  CodeBuildRole:
-    Value: !GetAtt CodeBuildRole.Arn
+      Name: PipelineRoleDiego
+  CodeBuildRoleDiego:
+    Value: !GetAtt CodeBuildRoleDiego.Arn
     Export:
-      Name: CodeBuildRole
-  S3ArtifactsBucket:
-    Value: !Ref S3ArtifactsBucket
+      Name: CodeBuildRoleDiego
+  S3ArtifactsBucketDiego:
+    Value: !Ref S3ArtifactsBucketDiego
     Export:
-      Name: S3ArtifactsBucket
-  LambdaPolicyDynamo:
-    Value: !Ref LambdaPolicyDynamo
+      Name: S3ArtifactsBucketDiego
+  LambdaPolicyDynamoDiego:
+    Value: !Ref LambdaPolicyDynamoDiego
     Export:
-        Name: LambdaPolicyDynamo
-  LambdaPolicyEC2:
-    Value: !Ref LambdaPolicyEC2
+        Name: LambdaPolicyDynamoDiego
+  LambdaPolicyEC2Diego:
+    Value: !Ref LambdaPolicyEC2Diego
     Export:
-        Name: LambdaPolicyEC2
-  LambdaPolicyCW:
-    Value: !Ref LambdaPolicyCW
+        Name: LambdaPolicyEC2Diego
+  LambdaPolicyCWDiego:
+    Value: !Ref LambdaPolicyCWDiego
     Export:
-        Name: LambdaPolicyCW
-  LambdaPolicyS3:
-    Value: !Ref LambdaPolicyS3
+        Name: LambdaPolicyCWDiego
+  LambdaPolicyS3Diego:
+    Value: !Ref LambdaPolicyS3Diego
     Export:
-        Name: LambdaPolicyS3        
+        Name: LambdaPolicyS3Diego       
